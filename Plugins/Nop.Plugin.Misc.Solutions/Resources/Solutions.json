@@ -1,0 +1,38 @@
+﻿{
+  "Solutions": {
+    "EidSoftware": {
+      "StockRecorder": {
+        "Sheep": {
+          "Breeding": [
+            "Tupping",
+            "Pregnancy-Scanning",
+            "Lambing",
+            "Lambing-Scores",
+            "Fostering",
+            "Weaning"
+          ],
+          "Handling": [
+            "Drafting",
+            "Groups",
+            "Multiple-Actions",
+            "Change-Tag-Number",
+            "Weighing"
+          ],
+          "FlockHealth": [
+            "Deaths",
+            "Treatments"
+          ],
+          "Movements": [
+            "Move-to-Grasskeep",
+            "Send-to-Market",
+            "Private-Sales",
+            "Purchase-Sheep",
+            "Send-to-Slaughter"
+          ]
+        },
+        "Cattle": [],
+        "GettingStarted": []
+      }
+    }
+  }
+}

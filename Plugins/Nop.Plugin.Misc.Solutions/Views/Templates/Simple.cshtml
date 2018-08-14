@@ -1,0 +1,14 @@
+﻿@using Nop.Core.Domain.Common;
+@using Nop.Core.Infrastructure;
+@using Nop.Web.Framework;
+@using System.Linq;
+@using System;
+
+
+@{
+    Layout = "~/Plugins/Misc.Solutions/Views/Solutions/shared/_Container.cshtml";
+
+    <div class="container">
+        @Html.Action("TopicPartial", "Solutions", new { systemName = ViewBag.SystemName })
+    </div>
+}

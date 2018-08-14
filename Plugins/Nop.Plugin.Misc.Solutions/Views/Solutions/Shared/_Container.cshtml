@@ -1,0 +1,18 @@
+﻿@using Nop.Core.Domain.Common;
+@using Nop.Core.Infrastructure;
+@using System.Web.Mvc;
+@using Nop.Web.Framework.UI;
+
+<div id="solutions-wrapper">
+    @{
+        Layout = "~/Views/Shared/_Root.cshtml";
+
+
+        Html.AppendScriptParts("~/Plugins/Misc.Solutions/Resources/custom.js");
+        Html.AppendScriptParts("//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-584688ec58260325");
+        Html.AppendCssFileParts("~/Plugins/Misc.Solutions/Resources/plugin-styles.css");
+
+    }
+
+    @RenderBody()
+</div>

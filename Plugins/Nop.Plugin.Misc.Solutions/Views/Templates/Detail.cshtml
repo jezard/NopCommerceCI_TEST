@@ -1,0 +1,166 @@
+﻿@using Nop.Core.Domain.Common;
+@using Nop.Core.Infrastructure;
+@using Nop.Web.Framework;
+@using System.Linq;
+@using System;
+
+
+@{
+    Layout = "~/Plugins/Misc.Solutions/Views/Solutions/shared/_Container.cshtml";
+
+
+
+    <div class="container">
+        @if (ViewBag.GrandParent != null && ViewBag.GrandParentSiblings[0] != null)
+        {
+            <nav id="bridge-nav">
+                <span>You are in <span>@ViewBag.GrandParent</span> - Show me:</span>
+                @foreach (var item in ViewBag.GrandParentSiblings)
+                {
+                    <span>&bull; <a href="../../@item">@item</a></span>
+                }
+            </nav>
+        }
+       
+        <main>
+            <article>
+                @{
+                    var grandParentText = "";
+                }
+                @if (ViewBag.GrandParent != null)
+                {
+                    grandParentText = ViewBag.GrandParent.Replace("-", " ") + " »";
+                }
+                <h1>@grandParentText @ViewBag.Parent.Replace("-", " ") &raquo;&nbsp;@ViewBag.PageName.Replace("-", " ")</h1>
+                <nav class="col-sm-6">
+                    <div class="spacer-sm">&nbsp;</div>
+                    <h3><em class="fa fa-coffee">&nbsp;</em> Also in <strong>@grandParentText @ViewBag.parent.Replace("-", " ")</strong> section:</h3>
+
+                    @if (ViewBag.ParentChildren.Length <= 1)
+                    {
+                        <p>No items</p>
+                    }
+
+                    <ul class="section-pages-nav">
+                        @{
+
+                            var prevLink = "";
+                            var prevText = "";
+                            var nextLink = "";
+                            var nextText = "";
+                            var nextArrow = "";
+                            var prevArrow = "";
+
+                            int count = 0;
+                        }
+
+
+                        @foreach (var item in ViewBag.Siblings)
+                        {
+                            if (item != null)
+                            {
+                                <li data-detail="@item" data-subcategory="@ViewBag.Parent"><a href="@item">@item.Replace("-", " ")&nbsp;<em class="fa fa-arrow-right">&nbsp;</em></a></li>
+                            }
+                            else
+                            {
+                                <li>No Items</li>
+                            }  
+                        }
+
+                        @foreach (var item in ViewBag.ParentChildren)
+                        {
+                            if (item == ViewBag.PageName && ViewBag.ParentChildren.Length > 1)
+                            {
+                                if (count == 0)
+                                {
+                                    prevLink = "#";
+                                    prevText = "Top";
+                                    prevArrow = "up";
+                                    nextLink = ViewBag.ParentChildren[count + 1];
+                                    nextText = ViewBag.ParentChildren[count + 1].Replace("-", " ");
+                                    nextArrow = "right";
+                                }
+                                if (count > 0 && count < ViewBag.ParentChildren.Length - 1)
+                                {
+                                    prevLink = ViewBag.ParentChildren[count - 1];
+                                    prevText = ViewBag.ParentChildren[count - 1].Replace("-", " ");
+                                    prevArrow = "left";
+                                    nextLink = ViewBag.ParentChildren[count + 1];
+                                    nextText = ViewBag.ParentChildren[count + 1].Replace("-", " ");
+                                    nextArrow = "right";
+                                }
+                                if (count == ViewBag.ParentChildren.Length - 1)
+                                {
+                                    prevLink = ViewBag.ParentChildren[count - 1];
+                                    prevText = ViewBag.ParentChildren[count - 1].Replace("-", " ");
+                                    prevArrow = "left";
+                                    nextLink = "#";
+                                    nextText = "Top";
+                                    nextArrow = "up";
+                                }
+                            }
+                            count++;
+                        }
+                    </ul>
+                </nav>
+
+
+                <nav class="col-sm-6">
+                    @if (ViewBag.GrandParent != null)
+                    {
+                        <div class="spacer-sm">&nbsp;</div>
+                        <h3>See also:</h3>
+                        <ul class="section-pages-nav">
+                            <li><a href="../../@ViewBag.GrandParent">Other @ViewBag.GrandParent.Replace("-", " ") sections <em class="fa fa-arrow-right">&nbsp;</em></a></li>
+                            <li>
+                                <ul style="list-style-type:none; padding:0 20px">
+                                    @foreach (var item in ViewBag.ParentSiblings)
+                                    {
+                                        if (item != null)
+                                        {
+                                            <li style="line-height:20px">(@item.Replace("-", " "))</li>
+                                        }
+                                        else
+                                        {
+                                            <li>No Items</li>
+                                        }
+
+                                    }
+                                </ul>
+                            </li>
+                            @foreach (var item in ViewBag.GrandParentSiblings)
+                            {
+                                if (item != null)
+                                {
+                                    <li><a href="../../@item">@item.Replace("-", " ") <em class="fa fa-arrow-right">&nbsp;</em></a></li>
+                                }
+                                else
+                                {
+                                    <li>No Items</li>
+                                }
+
+                            }
+
+                        </ul>
+                    }
+                </nav>
+                <div class="spacer-sm">&nbsp;</div>
+                <section class="sd-info-row">
+                    @Html.Action("TopicPartial", "Solutions", new { systemName = ViewBag.SystemName })
+                    @if (ViewBag.ParentChildren.Length > 1)
+                    {
+                        <h2>Continue Reading:</h2>
+                        <div class="spacer-sm">&nbsp;</div>
+                        <div class="section-nav">
+                            <div class="nav-previous"><a class="foot-nav-button" title="@prevText" href="@prevLink"><em class="fa fa-arrow-@prevArrow">&nbsp;</em> @prevText</a></div>
+                            <div class="nav-next"><a class="foot-nav-button" title="@nextText" href="@nextLink">@nextText <em class="fa fa-arrow-@nextArrow">&nbsp;</em></a></div>
+                        </div>
+                    }
+
+
+
+                </section>
+            </article>
+        </main>
+    </div>
+}

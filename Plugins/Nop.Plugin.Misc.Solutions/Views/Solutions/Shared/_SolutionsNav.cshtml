@@ -1,0 +1,10 @@
+﻿<nav id="sd-breadcrumb-wrap">
+    <div class="container">
+        <ul class="breadcrumb">
+            @Html.Raw(ViewBag.BreadCrumb)
+        </ul>
+        <nav class="bridge-nav col-md-6">
+            <span>You are in <strong>@ViewBag.Category</strong> Show me:</span> <a href="@ViewBag.OtherCategories[0].Key">@ViewBag.OtherCategories[0].Value</a> | <a href="@ViewBag.OtherCategories[1].Key">@ViewBag.OtherCategories[1].Value</a>
+        </nav>
+    </div>
+</nav>

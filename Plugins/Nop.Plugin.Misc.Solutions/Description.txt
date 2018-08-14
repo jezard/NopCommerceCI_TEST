@@ -1,0 +1,8 @@
+﻿Group: Misc
+FriendlyName: Solutions / Shearwell Technology Pages
+SystemName: Misc.Solutions
+Version: 1.00
+SupportedVersions: 3.80
+Author: Shearwell Data Ltd
+DisplayOrder: 1
+FileName: Nop.Plugin.Misc.Solutions.dll

@@ -1,0 +1,11 @@
+﻿@{
+    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+
+    //page class
+    Html.AppendPageCssClassParts("html-home-page");
+}
+<div class="">
+    <div class="">
+        @Html.Action("TopicBlock", "Topic", new { systemName = "HomePageContent" })
+    </div>
+</div>
