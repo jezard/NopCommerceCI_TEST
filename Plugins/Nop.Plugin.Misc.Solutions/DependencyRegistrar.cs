@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using Autofac.Core;
-using Autofac.Integration.Mvc;
 using Nop.Core.Data;
 using Nop.Core.Infrastructure;
 using Nop.Core.Infrastructure.DependencyManagement;
