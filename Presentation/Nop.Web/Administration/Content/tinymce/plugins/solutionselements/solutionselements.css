@@ -2,7 +2,7 @@
 #solutions-wrapper p, #solutions-wrapper ul li{
     font-size: 16px;
 }
-#last-edit-date{
+.last-edit-date{
     font-size:10px;
 }
 .stock-recorder-device{
@@ -227,10 +227,10 @@ section .sd-info-row, section.sd-info-row{
     border: 1px solid #00853E;
     background: rgba(0,133,62, 0.1);
 }
-.thumbnail > img, .thumbnail a > img {
+/*.thumbnail > img, .thumbnail a > img {
     max-width: 100px;
     margin-top: 30px;
-}
+}*/
 
 #sd-breadcrumb-wrap
 {
