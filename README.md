@@ -1,52 +1,40 @@
-# solutions-plugin (for V3.70)
+Overview
+========
+We've discussed several times how it might be a good thing to deploy our websites using Git. The issue we seemed to stumble on is whereas deploying scripted sites compiled at runtime e.g. php works very well, the extra build step meant that we'd either need a separate repository containing the published site or to find some other way to do it. After some research, and knowing that we are now all committed to Git VCS it is clear that others are utilising Continuous Integration CI successfully with .Net apps. There are several tools available, but during my googling for the best tools for .Net, TeamCity seemed to come out top (*After trialling it seems very well integrated with VS - It doesn't feel like working with a generic project type, it feels like an extension of VS*). TeamCity is a CI server which *can* run on the production server. It is not open-source but has a extremely usable no-cost version. I created a basic test scenario on my Windows machine comprising TC server (which has a great webmin front end attached) and build project, a NopCommerce Visual Studio project, a GitHub repository and a website on local IIS. 
 
-## 
-Notes:
-Earlier versions of the plugin included theme modifications. These have been saved on the 'theme-demo' branch
-The aim is now to keep the solutions plugin modular.
+One of the first tasks was to create a new TC project. There was a requirement to connect to a VCS, I chose GitHub as I'm familiar with it, wanted to keep the test scenario away from our production code repositories and systems, and don't yet have access to the online version of TFS. I authorised* TC on GitHub and copied the GitHub generate clientId and secret to the TC project. I'd imagine that TFS follows a similar process flow. Once I'd then selected which GitHub repository I'd like to use for the TC project (a simple drop down in TC), TC generated a series of suggested build steps, with some recommendations. I followed the recommendations and had to make a few amends to the VS project (mainly incorrect project references, and needed to add MSBuild.Microsoft.VisualStudio.Web.targets to Nop.Web and Nop.Admin [see below])
+
+Once the suggested build steps ran correctly, I added a further step to copy the files from my checkout directory (C:\TeamCity\buildAgent\work\f07da7dc653c78c4) where they are built, to the IIS website directory for my test site.
+
+*When setting myself up as a user on TC I didn't initially use the same email address as that in my GitHub account, causing GH to throw a wobbly. Would recommend using same email address in TC and VCS to avoid this potential issue in TFS online.
+
+The basic flow of the completed CI scenario is as follows:
+- code updated in Visual Studio NopCommerce project and committed and pushed to the GitHub repo [branch/master]
+- CI server polls at configurable [60 seconds] interval looking for changes in configurable [master] branch 
+- CI server completes each of the build steps in turn. There are five in total, the first four were detected automatically (overridable) by the presence of the .sln file and the last created by me copies the files in the Nop.Web directory to the website root. There are more configurable ways to do this (see below) but this works for proof of concept
+
+Additionally, it is easy to revert to /build a previous snapshot by selecting a previous commit in the [Run ...] dropdown menu. Build logs are very verbose and give plenty of detail about what's going on...
 
 
-## Installation
+Building on server:
+===================
 
-- [x] Install and enable plugin in Administration panel
-- [x] Ensure correct version of NopCommerce listed in Description.txt
-- [x] Ensure any images uploaded to the plugin are also copied over
-- [x] Add 'Solutions' topic and enable it to display in the top menu
-- [x] See the Wiki page for how to generate the SQL inserts for the topics
-- [x] Add TinyMCE Plugins 'solutionselements' and 'bootgrid' (\Presentation\Nop.Web\Content\tinymce\plugins) and copy over or amend init settings in \Presentation\Nop.Web\Administration\Views\Shared\EditorTemplates\RichEditor.cshtml
-- [x] Roxy Fileman - update FILES_ROOT, "SESSION_PATH_KEY":    "DynamicDirectory", in \Presentation\Nop.Web\Content\Roxy_Fileman\conf.json
-- [x] 'Unhack' the core code by restoring the default functionality in Presentation/Nop.Web/Administration/Controllers/RoxyFilemanController.cs Circa lines 141 and 151
-- [x] Go to System -> Templates and + Add new record. _Name_ = Partial Template _View path_ = ~/Plugins/Misc.Solutions/Views/Solutions/shared/TopicPartial.cshtml. Need to make sure that id of solution topic is equal to the id of the correct Template in TopicTemplate table.  Can edit this query using the correct ID and Database:
+Get and reference this in the project: https://www.nuget.org/packages/MSBuild.Microsoft.VisualStudio.Web.targets/ see also https://github.com/pdonald/nuget-webtargets . I had to add this to both Nop.Web and Nop.Admin projects. I tried installing this different ways, but try adding through "Manage NuGet Packages" in the project context menu first
+
+Deploy:
+=======
+
+I've simply set up two Configuration parameters in the project.
+```build.file.directory  Presentation\Nop.Web\```
+```Presentation\Nop.Web\ C:\Users\JeremyS\Projects\VisualStudio\TestWebRoot\```
+These are picked up by the command line editor in TeamCity (Type % to get/see/use the values) when I set up an additional build step (batch).
+
+I then used robocopy to publish the files to my website root (and add an echo to exit 0 [success] rather than 1):
+```
+@robocopy  %build.file.directory% %publish.web.directory% /s
+echo "robocopy done."
 ```
 
- USE <DATABASE>
- UPDATE dbo.Topic SET TopicTemplateId = <ID> WHERE SystemName LIKE 'Solutions.%';
-```
-
-
-
-# solutions-plugin (for V3.80)
-
-## 
-Notes:
-There are a few changes to note with version 3.80
-- The TopicTable now contains a 'Published' Field (bit, not null), so if copying from topics from version 3.7 it may ne necessary to create the field and give it a default value of 1 so that the records can be inserted
-- The path to Administration content path has changed from to \Presentation\Nop.Web\Administration\Content \Presentation\Nop.Web\Content which is probably enough of a reason to create two different versions of the plugin
-
-
-## Installation
-
-- [x] Install and enable plugin in Administration panel
-- [x] Ensure correct version of NopCommerce listed in Description.txt
-- [x] Ensure any images uploaded to the plugin are also copied over
-- [x] Add 'Solutions' topic and enable it to display in the top menu
-- [ ] See the Wiki page for how to generate the SQL inserts for the topics
-- [x] Add TinyMCE Plugins 'solutionselements' and 'bootgrid' (\Presentation\Nop.Web\Administration\Content\tinymce\plugins) and copy over or amend init settings in \Presentation\Nop.Web\Administration\Views\Shared\EditorTemplates\RichEditor.cshtml
-- [x] Roxy Fileman - update FILES_ROOT, "SESSION_PATH_KEY":    "DynamicDirectory", in \Presentation\Nop.Web\Administration\Content\Roxy_Fileman\conf.json
-- [x] 'Unhack' the core code by restoring the default functionality in Presentation/Nop.Web/Administration/Controllers/RoxyFilemanController.cs Circa lines 141 and 151
-- [x] Go to System -> Templates and + Add new record. _Name_ = Partial Template _View path_ = ~/Plugins/Misc.Solutions/Views/Solutions/shared/TopicPartial.cshtml. Need to make sure that id of solution topic is equal to the id of the correct Template in TopicTemplate table.  Can edit this query using the correct ID and Database:
-```
-
- USE <DATABASE>
- UPDATE dbo.Topic SET TopicTemplateId = <ID> WHERE SystemName LIKE 'Solutions.%';
-```
+See also:
+https://www.iis.net/downloads/microsoft/web-deploy
+https://www.geekytidbits.com/web-deploy-ms-deploy-from-teamcity/ 
